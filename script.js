@@ -3,7 +3,7 @@ const scrollContainer = document.getElementById('table-container');
 const scrollContent = document.getElementById('scroll-content');
 const headerRow = document.getElementById('table-headers');
 
-let scrollSpeed = 0.3;
+let scrollSpeed = 0.5;
 let isPaused = false;
 let scrollStarted = false;
 
