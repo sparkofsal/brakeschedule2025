@@ -1,4 +1,5 @@
-const sheetID = '1wqrnyX4_b0gbuDLnYh-3cX_h5SZwoBq7_fG4BFTnL1w';
+const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQzmG-_VDbkpxFnh8_nNLxA8x-oNUVNep2568qb98cdOleCLEEFAK3fm3AfQiKxUCmnWPNq-yXLV2ov/gviz/tq?tqx=out:json';
+
 const scrollContainer = document.getElementById('table-container');
 const scrollContent = document.getElementById('scroll-content');
 const headerRow = document.getElementById('table-headers');
@@ -22,8 +23,7 @@ function updateClock() {
 
 async function loadSchedule() {
   try {
-    const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json&cacheBuster=${Date.now()}`;
-    const res = await fetch(url);
+    const res = await fetch(sheetURL);
     const text = await res.text();
     const json = JSON.parse(text.substr(47).slice(0, -2));
 
@@ -41,14 +41,14 @@ async function loadSchedule() {
         const td = document.createElement('td');
         let value = cell?.v ?? '';
 
-        // Case 1: Google Sheets returns raw JS Date object
+        // Case 1: JS Date
         if (value instanceof Date) {
           const mm = String(value.getMonth() + 1).padStart(2, '0');
           const dd = String(value.getDate()).padStart(2, '0');
           value = `${mm}/${dd}`;
         }
 
-        // Case 2: Google returns string like 'Date(2025,4,15)'
+        // Case 2: Raw Google Sheets Date string
         if (typeof value === 'string' && /^Date\(\d+,\d+,\d+\)$/.test(value)) {
           const [, y, m, d] = value.match(/Date\((\d+),(\d+),(\d+)\)/).map(Number);
           const mm = String(m + 1).padStart(2, '0');
@@ -62,10 +62,10 @@ async function loadSchedule() {
       return tr;
     }
 
-    // This will create the rows and start scrolling
+    // Create and duplicate rows
     scrollContent.innerHTML = '';
     rows.forEach(row => scrollContent.appendChild(createFormattedRow(row)));
-    rows.forEach(row => scrollContent.appendChild(createFormattedRow(row))); // duplicate
+    rows.forEach(row => scrollContent.appendChild(createFormattedRow(row)));
 
     if (!scrollStarted) {
       scrollStarted = true;
@@ -77,7 +77,6 @@ async function loadSchedule() {
   }
 }
 
-// This function handles the scrolling logic
 function scrollStep() {
   if (!isPaused) {
     scrollContainer.scrollTop += scrollSpeed;
@@ -89,11 +88,9 @@ function scrollStep() {
   requestAnimationFrame(scrollStep);
 }
 
-// This will pause scrolling when mouse is over the container
 scrollContainer.addEventListener('mouseenter', () => { isPaused = true; });
 scrollContainer.addEventListener('mouseleave', () => { isPaused = false; });
 
-// Init
 loadSchedule();
 updateClock();
 setInterval(loadSchedule, 3 * 60 * 1000);
