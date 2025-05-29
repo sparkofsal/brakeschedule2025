@@ -1,10 +1,9 @@
-const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQzmG-_VDbkpxFnh8_nNLxA8x-oNUVNep2568qb98cdOleCLEEFAK3fm3AfQiKxUCmnWPNq-yXLV2ov/gviz/tq?tqx=out:json';
-
+const sheetID = '138bcv6lINhle7CoLVczeP9yRJiPmAwwMkDZHwMrvtXU';
 const scrollContainer = document.getElementById('table-container');
 const scrollContent = document.getElementById('scroll-content');
 const headerRow = document.getElementById('table-headers');
 
-let scrollSpeed = 0.5;
+let scrollSpeed = 0.3;
 let isPaused = false;
 let scrollStarted = false;
 
@@ -23,7 +22,8 @@ function updateClock() {
 
 async function loadSchedule() {
   try {
-    const res = await fetch(sheetURL);
+    const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json&cacheBuster=${Date.now()}`;
+    const res = await fetch(url);
     const text = await res.text();
     const json = JSON.parse(text.substr(47).slice(0, -2));
 
@@ -41,15 +41,12 @@ async function loadSchedule() {
         const td = document.createElement('td');
         let value = cell?.v ?? '';
 
-        // Case 1: JS Date
+        // Format raw date objects or 'Date(yyyy,mm,dd)' strings to MM/DD
         if (value instanceof Date) {
           const mm = String(value.getMonth() + 1).padStart(2, '0');
           const dd = String(value.getDate()).padStart(2, '0');
           value = `${mm}/${dd}`;
-        }
-
-        // Case 2: Raw Google Sheets Date string
-        if (typeof value === 'string' && /^Date\(\d+,\d+,\d+\)$/.test(value)) {
+        } else if (typeof value === 'string' && /^Date\(\d+,\d+,\d+\)$/.test(value)) {
           const [, y, m, d] = value.match(/Date\((\d+),(\d+),(\d+)\)/).map(Number);
           const mm = String(m + 1).padStart(2, '0');
           const dd = String(d).padStart(2, '0');
@@ -62,10 +59,9 @@ async function loadSchedule() {
       return tr;
     }
 
-    // Create and duplicate rows
     scrollContent.innerHTML = '';
     rows.forEach(row => scrollContent.appendChild(createFormattedRow(row)));
-    rows.forEach(row => scrollContent.appendChild(createFormattedRow(row)));
+    rows.forEach(row => scrollContent.appendChild(createFormattedRow(row))); // duplicate
 
     if (!scrollStarted) {
       scrollStarted = true;
