@@ -1,11 +1,6 @@
 const sheetID = '138bcv6lINhle7CoLVczeP9yRJiPmAwwMkDZHwMrvtXU';
-const scrollContainer = document.getElementById('table-container');
 const scrollContent = document.getElementById('scroll-content');
 const headerRow = document.getElementById('table-headers');
-
-let scrollSpeed = 0.5;
-let isPaused = false;
-let scrollStarted = false;
 
 function updateClock() {
   const now = new Date();
@@ -31,7 +26,6 @@ async function loadSchedule() {
     const cols = json.table.cols;
 
     // Build headers
-    headerRow.innerHTML = '';
     headerRow.innerHTML = cols.map(col => `<th>${col.label}</th>`).join('');
 
     // Helper to build one row
@@ -61,31 +55,12 @@ async function loadSchedule() {
 
     scrollContent.innerHTML = '';
     rows.forEach(row => scrollContent.appendChild(createFormattedRow(row)));
-    rows.forEach(row => scrollContent.appendChild(createFormattedRow(row))); // duplicate
 
-    if (!scrollStarted) {
-      scrollStarted = true;
-      scrollStep();
-    }
   } catch (err) {
     scrollContent.innerHTML = '<tr><td colspan="100%">⚠️ Failed to load schedule.</td></tr>';
     console.error('Error loading schedule:', err);
   }
 }
-
-function scrollStep() {
-  if (!isPaused) {
-    scrollContainer.scrollTop += scrollSpeed;
-    const resetPoint = scrollContent.scrollHeight / 2;
-    if (scrollContainer.scrollTop >= resetPoint) {
-      scrollContainer.scrollTop = 0;
-    }
-  }
-  requestAnimationFrame(scrollStep);
-}
-
-scrollContainer.addEventListener('mouseenter', () => { isPaused = true; });
-scrollContainer.addEventListener('mouseleave', () => { isPaused = false; });
 
 loadSchedule();
 updateClock();
