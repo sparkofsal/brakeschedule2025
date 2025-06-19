@@ -13,34 +13,46 @@ body {
   flex-direction: column;
   align-items: center;
 }
+
+/* Header layout */
 .header {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: left;
 }
 
+/* Logo image */
 .logo {
-  height: 60px;
-  max-width: 120px;
+  height: clamp(60px, 8vw, 100px);
+  width: auto;
   object-fit: contain;
 }
 
-h1 {
+/* Text block next to logo */
+.header-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Title */
+.header-text h1 {
   font-size: clamp(1.5rem, 2.5vw, 3rem);
-  text-align: center;
-  margin-bottom: 1rem;
+  margin: 0;
 }
 
+/* Datetime below title */
 #datetime {
-  font-size: clamp(1rem, 2vw, 1.5rem);
-  margin-bottom: 1.5rem;
-  text-align: center;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  margin-top: 0.5rem;
+  color: #ccc;
 }
 
-/* Table container with max width for large screens */
+/* Table container */
 #table-container {
   width: 100%;
   max-width: 1200px;
@@ -62,9 +74,10 @@ th, td {
   border: 1px solid #444;
   text-align: center;
   word-break: break-word;
+  white-space: normal;
 }
 
-/* Sticky header */
+/* Sticky header row */
 thead tr {
   position: sticky;
   top: 0;
@@ -72,11 +85,20 @@ thead tr {
   z-index: 1;
 }
 
-/* Scrollbar styling (optional, for TVs and aesthetics) */
+/* Scrollbar styling */
 #table-container::-webkit-scrollbar {
   width: 10px;
 }
 #table-container::-webkit-scrollbar-thumb {
   background: #555;
   border-radius: 5px;
+}
+
+/* Optional: hide scrollbars completely for passive displays */
+#table-container::-webkit-scrollbar {
+  display: none;
+}
+#table-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
